@@ -1,7 +1,7 @@
 ###
  # @Author       : facsert
  # @Date         : 2023-08-09 17:59:14
- # @LastEditTime : 2023-08-09 18:00:35
+ # @LastEditTime: 2023-08-14 22:40:20
  # @Description  : edit description
 ### 
 
@@ -17,10 +17,10 @@ function logger() {
         printf "[INFO ][%s]: %-80s \n" "$now" "$content"
         ;;
       "error")
-        printf "\33[33m[ERROR][%s]: %-80s \33[37m \n" "$now" "$content"
+        printf "\33[33m[ERROR][%s]: %-80s \33[0m \n" "$now" "$content"
         ;;
       *) 
-        echo -e "error parameter: $type"
+        echo "error parameter: $type"
         exit 1
         ;;
     esac
@@ -34,17 +34,17 @@ function display() {
     
     case $type in
       "true") 
-        printf "\n\33[32m[INFO ][%s]: %-80s  [PASS] \33[37m \n" "$now" "$content"
+        printf "\33[32m[INFO ][%s]: %-80s  [PASS] \33[0m \n" "$now" "$content"
         ;;
       "false")
-        printf "\n\33[31m[ERROR][%s]: %-80s  [FAIL] \33[37m \n" "$now" "$content"
+        printf "\33[31m[ERROR][%s]: %-80s  [FAIL] \33[0m \n" "$now" "$content"
         ;;
       "exit")
-        printf "\n\33[31m[ERROR][%s]: %-80s  [EXIT] \33[37m \n" "$now" "$content"
+        printf "\33[31m[ERROR][%s]: %-80s  [EXIT] \33[0m \n" "$now" "$content"
         exit 1
         ;;
       *) 
-        echo -e "\33[31merror parameter: $type \33[37m;content: $content"
+        printf "\33[31m[ERROR][%s]: %-80s  [EXIT]\33[0m \n" "$now" "error type:$type, $content"
         exit 1
         ;;
     esac
@@ -90,7 +90,7 @@ while [[ $# -gt 0 ]]; do
         ;;
       --host)
         logger "info" "Set host to $2"
-        GPB_HOST=$2
+        HOST=$2
         shift 2
         ;;
       *)
@@ -121,3 +121,6 @@ for param in ${params[@]}; do
 done
 
 
+display "true" "info msg"
+display "false" "info msg"
+display "warnin" "info msg"
