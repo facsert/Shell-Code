@@ -1,12 +1,14 @@
 ###
  # @Author       : facsert
  # @Date         : 2023-08-09 17:59:14
- # @LastEditTime: 2023-08-14 22:40:20
+ # @LastEditTime: 2023-12-13 22:46:37
  # @Description  : edit description
 ### 
 
 
 # 打印函数
+# logger "info"  "info log"
+# logger "error" "error log"
 function logger() {
     local type=${1:-"info"}
     local content=$2
@@ -27,6 +29,9 @@ function logger() {
 }
 
 # 打印结果, true->pass false->fail exit->exit(错误并退出)
+# display "true"   "pass msg"
+# display "false"  "fail msg"
+# display "exit" "fail msg and exit"
 function display() {
     local type=${1:-"true"}
     local content=$2
@@ -51,6 +56,7 @@ function display() {
 }
 
 # 标题打印
+# title 0 "level 0 title"
 function title() {
     local level=${1:-3}
     local content=$2
@@ -74,13 +80,18 @@ function title() {
     echo -e "$next$side$side $content $side$side"
 }
 
-
+usage=$(cat <<EOF
+  -h/--help      show help   \n
+  -d/--dir DIR   set workdir \n
+  --host HOST    set host    \n
+EOF
+)
 
 declare -a params
 while [[ $# -gt 0 ]]; do
     case $1 in
       -h|--help)
-        usage
+        echo -e usage
         exit 0
         ;;
       -d|--dir)
@@ -102,7 +113,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo "params: ${params[@]}"
-
 for param in ${params[@]}; do
     case $param in
       -t|--test)
@@ -119,8 +129,3 @@ for param in ${params[@]}; do
        ;;
     esac
 done
-
-
-display "true" "info msg"
-display "false" "info msg"
-display "warnin" "info msg"
