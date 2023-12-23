@@ -80,6 +80,41 @@ function title() {
     echo -e "$next$side$side $content $side$side"
 }
 
+
+# 替换字符串
+function replace() {
+  local string=$1
+  local src=$2
+  local dst=$3
+  local once=${4:-false}
+  [[ $once == "true" ]] && local all="" || local all="g"
+  echo -e $string | sed -e "s/${src}/${dst}/${all}"
+  [[ $? -ne 0 ]] && echo "failed"; return 1
+}
+
+# 取出字符串中匹配的内容
+function search() {
+  local string=$1
+  local regex=$2
+  echo -e $string | grep -oP "$regex"
+  [[ $? -ne 0 ]] && echo "failed"; return 1
+}
+
+
+# 字符串分割
+function split() {
+    local string=$1
+    local separator=$2
+    echo -e $string | tr "$separator" " "
+}
+
+# 字符串拼接
+function join() {
+    local string=$1
+    local separator=$2
+    echo -e $string | tr " " "$separator"
+}
+
 usage=$(cat <<EOF
   -h/--help      show help   \n
   -d/--dir DIR   set workdir \n
