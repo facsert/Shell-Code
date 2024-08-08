@@ -1,9 +1,19 @@
+
 CURRENT_DIR=$(pwd)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-START_COMMAND="./prometheus --config.file=config.yml --web.enable-lifecycle"
-RELOAD_COMMAND="curl -X POST http://localhost:9090/-/reload"
-CHECK_CONFIG="./promtool check config config.yml"
+START_SERVER="nohup python main.py >/dev/null 2>&1 &"
 
+# 拉起服务
+function start_process() {
+    cd $SCRIPT_DIR
+    $START_SERVER
+    local pid=$!
+    ps -aux | grep -v grep | grep $pid >/dev/null 2>&1
+    echo $pid > pid
+    return 0
+}
+
+# 关闭服务
 function kill_process() {
     cd $SCRIPT_DIR
     if [[ ! -f pid ]]; then
@@ -21,39 +31,7 @@ function kill_process() {
     return 0
 }
 
-function check_config() {
-    echo $CHECK_CONFIG
-    $CHECK_CONFIG
-    if [[ $? -ne 0 ]]; then
-        echo -e "\033[31mCheck config failed \033[0m"
-        return 1
-    fi
-    echo -e "\033[32mCheck config success\033[0m" 
-    return 0
-}
-
-function reload_process() {
-    check_process
-    [[ $? -ne 0 ]] && return 1
-    echo $RELOAD_COMMAND
-    $RELOAD_COMMAND
-    if [[ $? -ne 0 ]]; then
-        echo -e "\033[31mReload service failed \033[0m"
-        return 1
-    fi
-    echo -e "\033[32mReload service success \033[0m"
-    return 0
-}
-
-function start_process() {
-    cd $SCRIPT_DIR
-    nohup $START_COMMAND >/dev/null 2>&1 &
-    local pid=$!
-    ps -aux | grep -v grep | grep $pid >/dev/null 2>&1
-    echo $pid > pid
-    return 0
-}
-
+# 检查服务
 function check_process() {
     cd $SCRIPT_DIR
     if [[ ! -f pid ]]; then
@@ -76,12 +54,10 @@ function check_process() {
 }
 
 usage=$(cat <<EOF
-  -h/--help      show help       \n
-  --restart      restart service \n
-  --reload       reload service  \n
-  --kill         close service   \n
-  --check        check service   \n
-  --config       check config    \n
+  -h/--help      show help           \n
+  --restart      restart service     \n
+  --kill         close service       \n
+  --check        check service alive \n
 EOF
 )
 
@@ -91,12 +67,6 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             echo -e $usage
             exit 0
-            ;;
-        --reload)
-            cd $SCRIPT_DIR
-            reload_process
-            [[ $? -eq 0 ]] && cd $CURRENT_DIR || exit 1
-            shift
             ;;
         --restart)
             cd $SCRIPT_DIR
@@ -117,12 +87,6 @@ while [[ $# -gt 0 ]]; do
             cd $SCRIPT_DIR
             check_process
             cd $CURRENT_DIR
-            shift
-            ;;
-        --config)
-            cd $SCRIPT_DIR
-            check_config
-            [[ $? -eq 0 ]] && cd $CURRENT_DIR || exit 1
             shift
             ;;
         *)
