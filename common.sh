@@ -126,7 +126,7 @@ declare -a params
 while [[ $# -gt 0 ]]; do
     case $1 in
       -h|--help)
-        echo -e usage
+        echo -e $usage
         exit 0
         ;;
       -d|--dir)
