@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 START_SERVER="nohup python main.py >/dev/null 2>&1 &"
 
 # 拉起服务
-function start_process() {
+function StartProcess() {
     cd $SCRIPT_DIR
     $START_SERVER
     local pid=$!
@@ -14,7 +14,7 @@ function start_process() {
 }
 
 # 关闭服务
-function kill_process() {
+function KillProcess() {
     cd $SCRIPT_DIR
     if [[ ! -f pid ]]; then
         echo -e "\033[31mpid not exists \033[0m"
@@ -32,7 +32,7 @@ function kill_process() {
 }
 
 # 检查服务
-function check_process() {
+function CheckProcess() {
     cd $SCRIPT_DIR
     if [[ ! -f pid ]]; then
         echo -e "\033[31mpid not exists \033[0m"
@@ -54,10 +54,10 @@ function check_process() {
 }
 
 usage=$(cat <<EOF
-  -h/--help      show help           \n
-  --restart      restart service     \n
-  --kill         close service       \n
-  --check        check service alive \n
+    -h/--help      show help           \n
+    --restart      restart service     \n
+    --kill         close service       \n
+    --check        check service alive \n
 EOF
 )
 
@@ -70,22 +70,22 @@ while [[ $# -gt 0 ]]; do
             ;;
         --restart)
             cd $SCRIPT_DIR
-            kill_process
-            start_process
-            check_process
+            KillProcess
+            StartProcess
+            CheckProcess
             cd $CURRENT_DIR
             shift
             ;;
         --kill)
             cd $SCRIPT_DIR
-            kill_process
-            check_process
+            KillProcess
+            CheckProcess
             cd $CURRENT_DIR
             shift
             ;;
         --check)
             cd $SCRIPT_DIR
-            check_process
+            CheckProcess
             cd $CURRENT_DIR
             shift
             ;;
