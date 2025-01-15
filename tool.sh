@@ -96,7 +96,7 @@ function replace() {
 function search() {
   local string=$1
   local regex=$2
-  echo -e $string | grep -oP "$regex"
+  echo -e $string | grep -oE "$regex"
   [[ $? -ne 0 ]] && echo "failed"; return 1
 }
 
@@ -126,7 +126,7 @@ declare -a params
 while [[ $# -gt 0 ]]; do
     case $1 in
       -h|--help)
-        echo -e usage
+        echo -e $usage
         exit 0
         ;;
       -d|--dir)
@@ -140,10 +140,10 @@ while [[ $# -gt 0 ]]; do
         shift 2
         ;;
       *)
-       echo "param $1"
-       params+=($1)
-       shift
-       ;;
+        echo "param $1"
+        params+=($1)
+        shift
+        ;;
     esac
 done
 
@@ -159,8 +159,8 @@ for param in ${params[@]}; do
         shift
         ;;
       *)
-       display "exit" "error param $param"
-       shift
-       ;;
+        display "exit" "error param $param"
+        shift
+        ;;
     esac
 done
