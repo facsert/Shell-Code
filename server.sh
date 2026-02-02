@@ -53,8 +53,22 @@ function CheckProcess() {
     return 0
 }
 
+function BuildImage() {
+      local curr_time=$(date +"%Y%m%d_%H%M%S")
+      echo "TAG=$curr_time" > .env
+      docker compose build
+      if [[ $? -ne 0 ]]; then
+          echo -e "\033[31mbuild docker image failed \033[0m"
+          return 1
+      fi
+      
+      echo -e "\033[32mbuild images success\033[0m" 
+      docker images | egrep "$curr_time|REPOSITORY"
+}
+
 usage=$(cat <<EOF
     -h/--help      show help           \n
+    --build        build docker images \n
     --restart      restart service     \n
     --kill         close service       \n
     --check        check service alive \n
@@ -68,26 +82,30 @@ while [[ $# -gt 0 ]]; do
             echo -e $usage
             exit 0
             ;;
+        --build)
+            BuildImage
+            exit
+            ;;
         --restart)
             cd $SCRIPT_DIR
             KillProcess
             StartProcess
             CheckProcess
             cd $CURRENT_DIR
-            shift
+            exit
             ;;
         --kill)
             cd $SCRIPT_DIR
             KillProcess
             CheckProcess
             cd $CURRENT_DIR
-            shift
+            exit
             ;;
         --check)
             cd $SCRIPT_DIR
             CheckProcess
             cd $CURRENT_DIR
-            shift
+            exit
             ;;
         *)
             echo "param $1"
